@@ -1,11 +1,12 @@
 "use client";
 
 import "@ant-design/v5-patch-for-react-19"; 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../../../lib/supabase";
 import { Card, Button, Typography, Row, Col, Empty, Spin, message } from "antd";
 import { HeartFilled } from "@ant-design/icons";
+import Image from "next/image";
 
 export default function FavoritesPage() {
   const [user, setUser] = useState(null);
@@ -32,13 +33,7 @@ export default function FavoritesPage() {
   }, [router]);
 
   // ✅ Fetch favorites only when user is available
-  useEffect(() => {
-    if (user) {
-      fetchFavorites();
-    }
-  }, [user]);
-
-  const fetchFavorites = async () => {
+  const fetchFavorites = useCallback(async () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -54,7 +49,13 @@ export default function FavoritesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchFavorites();
+    }
+  }, [user, fetchFavorites]);
 
   const removeFromFavorites = async (postId) => {
     try {
@@ -75,28 +76,28 @@ export default function FavoritesPage() {
   };
 
   // ✅ Function to render media (image or video)
-  const renderMedia = (mediaUrl) => {
-    if (!mediaUrl) return null;
+  const renderMedia = (mediaUrls) => {
+    if (!mediaUrls || mediaUrls.length === 0) return null;
+
+    const mediaUrl = mediaUrls[0]; // Ensure there's always a fallback
 
     const isVideo = mediaUrl.endsWith(".mp4") || mediaUrl.includes("video");
 
-    if (isVideo) {
-      return (
-        <video
-          src={mediaUrl}
-          controls
-          style={{ height: "200px", objectFit: "cover", width: "100%" }}
-        />
-      );
-    } else {
-      return (
-        <img
-          src={mediaUrl}
-          alt="Listing"
-          style={{ height: "200px", objectFit: "cover", width: "100%" }}
-        />
-      );
-    }
+    return isVideo ? (
+      <video
+        src={mediaUrl}
+        controls
+        style={{ height: "200px", objectFit: "cover", width: "100%" }}
+      />
+    ) : (
+      <Image
+        src={mediaUrl}
+        alt="Listing"
+        width={300}
+        height={200}
+        style={{ objectFit: "cover", width: "100%", height: "200px" }}
+      />
+    );
   };
 
   if (loading) {
@@ -119,7 +120,7 @@ export default function FavoritesPage() {
             <Col key={listing.id} xs={24} sm={12} md={8} lg={6}>
               <Card
                 hoverable
-                cover={renderMedia(listing.media[0])} // Dynamically render media
+                cover={renderMedia(listing.media)} // Dynamically render media
                 actions={[
                   <Button
                     type="text"
@@ -149,7 +150,7 @@ export default function FavoritesPage() {
       ) : (
         <Empty
           image="https://cdn-icons-png.flaticon.com/512/4076/4076406.png"
-          styles={{ height: 150 }}
+          style={{ height: 150 }} // 🔥 Fixed from `styles` to `style`
           description={<span>No saved listings yet</span>}
         />
       )}

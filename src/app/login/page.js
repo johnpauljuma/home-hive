@@ -16,10 +16,10 @@ export default function SigninPage() {
       setLoading(true);
       const { email, password } = values;
   
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-  
-      if (error) {
-        message.error(error.message || "Login failed. Please try again.");
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (error || !data.user) {
+        message.error(error?.message || "Invalid credentials. Please try again.");
         setLoading(false);
       } else {
         message.success("Login successful! Redirecting...");
@@ -27,48 +27,55 @@ export default function SigninPage() {
           router.push("/home-hive"); // Change to your authenticated route
         }, 1500);
       }
-    };  
+    };
 
-  return (
-    <div style={styles.container}>
-      <div style={styles.content}>
-        {/* Left Side - Image */}
-        <div style={styles.imageContainer}>
-          <Image src="/login-image.png" alt="Welcome Back to Home Hive" width={350} height={400} style={styles.image} />
-        </div>
+    return (
+      <div style={styles.container}>
+        <div style={styles.content}>
+          {/* Left Side - Image */}
+          <div style={styles.imageContainer}>
+            <Image 
+              src="/login-image.png" 
+              alt="Welcome Back to Home Hive" 
+              width={350} 
+              height={400} 
+              priority
+              style={{ borderRadius: "10px" }}
+            />
+          </div>
 
-        {/* Right Side - Login Form */}
-        <div style={styles.formContainer}>
-          <Card style={styles.card}>
-            <h2 style={styles.title}>Welcome Back</h2>
-            <p style={styles.subtitle}>Sign in to continue exploring Home Hive rentals.</p>
+          {/* Right Side - Login Form */}
+          <div style={styles.formContainer}>
+            <Card style={styles.card}>
+              <h2 style={styles.title}>Welcome Back</h2>
+              <p style={styles.subtitle}>Sign in to continue exploring Home Hive rentals.</p>
 
-            <Form layout="vertical" onFinish={onFinish}>
-              <Form.Item label="Email" name="email" rules={[{ required: true, type: "email", message: "Enter a valid email" }]}>
-                <Input placeholder="example@email.com" />
-              </Form.Item>
+              <Form layout="vertical" onFinish={onFinish}>
+                <Form.Item label="Email" name="email" rules={[{ required: true, type: "email", message: "Enter a valid email" }]}>
+                  <Input placeholder="example@email.com" />
+                </Form.Item>
 
-              <Form.Item label="Password" name="password" rules={[{ required: true, message: "Enter your password" }]}>
-                <Input.Password placeholder="••••••••" />
-              </Form.Item>
+                <Form.Item label="Password" name="password" rules={[{ required: true, message: "Enter your password" }]}>
+                  <Input.Password placeholder="••••••••" />
+                </Form.Item>
 
-              <Button type="primary" htmlType="submit" block style={styles.button}>
-                Sign In
-              </Button>
+                <Button type="primary" htmlType="submit" block style={styles.button} loading={loading}>
+                  {loading ? "Signing In..." : "Sign In"}
+                </Button>
 
-              <p style={{ marginTop: "10px", textAlign: "center" }}>
-                <Link href="/forgot-password" style={styles.link}>Forgot Password?</Link>
-              </p>
+                <p style={{ marginTop: "10px", textAlign: "center" }}>
+                  <Link href="/forgot-password" style={styles.link}>Forgot Password?</Link>
+                </p>
 
-              <p style={{ marginTop: "15px", textAlign: "center" }}>
-                Don't have an account? <Link href="/signup" style={styles.link}>Sign up here</Link>
-              </p>
-            </Form>
-          </Card>
+                <p style={{ marginTop: "15px", textAlign: "center" }}>
+                  Don't have an account? <Link href="/signup" style={styles.link}>Sign up here</Link>
+                </p>
+              </Form>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
 }
 
 // Styles
@@ -79,7 +86,7 @@ const styles = {
     alignItems: "center",
     height: "80vh",
     background: "linear-gradient(135deg, #007BFF, #0056b3)", // Blue gradient
-    borderRadius:"10px"
+    borderRadius: "10px"
   },
   content: {
     display: "flex",
@@ -92,9 +99,6 @@ const styles = {
   },
   imageContainer: {
     flex: "none",
-  },
-  image: {
-    borderRadius: "10px",
   },
   formContainer: {
     flex: "none",
