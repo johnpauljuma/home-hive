@@ -68,7 +68,7 @@ export default function SigninPage() {
                 </p>
 
                 <p style={{ marginTop: "15px", textAlign: "center" }}>
-                  Don't have an account? <Link href="/signup" style={styles.link}>Sign up here</Link>
+                  Do not have an account? <Link href="/signup" style={styles.link}>Sign up here</Link>
                 </p>
               </Form>
             </Card>

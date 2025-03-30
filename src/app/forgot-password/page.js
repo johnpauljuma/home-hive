@@ -31,7 +31,7 @@ const ForgotPassword = () => {
       <Card style={{ width: 400, boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", borderRadius: 8 }}>
         <Title level={3} style={{ textAlign: "center" }}>Forgot Password?</Title>
         <Text style={{ display: "block", textAlign: "center", color: "#555" }}>
-          Enter your email and we'll send you a reset link.
+          Enter your email to receive a reset link.
         </Text>
 
         <Input
