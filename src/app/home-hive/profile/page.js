@@ -11,6 +11,7 @@ import Comments from "@/app/components/Comments";
 import ShareButton from "@/app/components/ShareButton";
 import SaveButton from "@/app/components/SaveButton";
 import EditProfileModal from "@/app/components/EditProfileModal";
+import ForgotPassword from "@/app/forgot-password/page";
 import styles from "../home.module.css";
 
 export default function ProfilePage() {
@@ -256,7 +257,9 @@ export default function ProfilePage() {
           <h2>{profileData?.full_name}</h2>
           <p>{profileData?.bio}</p>
           <Button type="primary" onClick={() => setIsEditing(true)}>Edit Profile</Button>
-
+          <Button type="default" onClick={() => router.push("/forgot-password")} style={{ marginLeft: "10px" }}>
+            Change Password
+          </Button>
           <EditProfileModal 
             isEditing={isEditing} 
             setIsEditing={setIsEditing} 

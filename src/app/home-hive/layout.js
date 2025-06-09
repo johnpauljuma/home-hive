@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 import CreateListingModal from "../components/CreateListingModal";
+import { Footer } from "antd/es/layout/layout";
 //import  from ""
 
 const { Header, Content } = Layout;
@@ -49,7 +50,7 @@ export default function HomeLayout({ children }) {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push("/login");
+    router.push("/");
   };
 
   // Profile dropdown menu
@@ -170,6 +171,7 @@ export default function HomeLayout({ children }) {
       <Content className="responsiveContent" style={styles.content}>
         {children}
       </Content>
+
     </Layout>
   ) : null;
 }
